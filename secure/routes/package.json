@@ -1,0 +1,8 @@
+{
+  "name": "marketcloud-secure",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "pdf-generator-lib": "2.4.3"
+  }
+}
