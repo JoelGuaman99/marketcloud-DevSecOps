@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar código del repositorio
+      - name: Descargar codigo del repositorio
         uses: actions/checkout@v4
 
       - name: Analizar version insegura
@@ -25,7 +25,7 @@ jobs:
             echo "Evidence: User-controlled parameter studentId concatenated into SQL query."
             echo "Resultado esperado: VULNERABLE"
           else
-            echo "No se detecto el patron vulnerable esperado."
+            echo "ERROR: No se encontro el patron vulnerable esperado."
             exit 1
           fi
 
@@ -52,13 +52,7 @@ jobs:
           echo "Authorization: Present"
           echo "Resultado esperado: SECURE"
 
-      - name: Security Gate
-        run: |
-          echo "======================================"
-          echo "SECURITY GATE: ALLOW"
-          echo "La version segura cumple los controles."
-          echo "======================================"
-                - name: Analizar secreto en version insegura
+      - name: Analizar secreto en version insegura
         run: |
           echo "=== ANALISIS DE SECRETOS - VERSION INSEGURA ==="
 
@@ -96,3 +90,10 @@ jobs:
           echo "Secret source: Environment variable"
           echo "Decision: ALLOW"
           echo "Resultado esperado: SECURE"
+
+      - name: Security Gate
+        run: |
+          echo "======================================"
+          echo "SECURITY GATE: ALLOW"
+          echo "La version segura cumple los controles."
+          echo "======================================"
