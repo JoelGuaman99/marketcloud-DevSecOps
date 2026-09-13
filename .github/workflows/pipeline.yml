@@ -1,4 +1,4 @@
-name: MarketCloud DevSecOps Pipeline
+\name: MarketCloud DevSecOps Pipeline
 
 on:
   push:
@@ -45,20 +45,31 @@ jobs:
         run: |
           echo "=== ANALISIS VERSION SEGURA ==="
 
-          if grep -q '\$1' secure/routes/payments.js && \
-             grep -q '\[studentId\]' secure/routes/payments.js; then
-
+          if grep -q 'WHERE student_id = \$1' secure/routes/payments.js; then
             echo "Parameterized query detected"
-            echo "Object-level authorization control detected"
-            echo "SAST RESULT"
-            echo "Finding: No SQL Injection pattern detected"
-            echo "Authorization: Present"
-            echo "Resultado esperado: SECURE"
-
           else
-            echo "ERROR: No se detectaron los controles de seguridad esperados."
+            echo "ERROR: No se encontro consulta parametrizada."
             exit 1
           fi
+
+          if grep -q 'db.query(query, \[requestedStudentId\])' secure/routes/payments.js; then
+            echo "Parameterized value binding detected"
+          else
+            echo "ERROR: No se encontro binding del parametro."
+            exit 1
+          fi
+
+          if grep -q '403' secure/routes/payments.js; then
+            echo "Object-level authorization control detected"
+          else
+            echo "ERROR: No se encontro control de autorizacion."
+            exit 1
+          fi
+
+          echo "SAST RESULT"
+          echo "Finding: No SQL Injection pattern detected"
+          echo "Authorization: Present"
+          echo "Resultado esperado: SECURE"
 
       # =========================================================
       # 2. SECRET SCANNING
