@@ -155,7 +155,17 @@ jobs:
           fi
 
       # =========================================================
-      # 4. SECURITY GATE
+      # 4. API AUTHORIZATION TEST
+      # =========================================================
+
+      - name: Prueba automatizada de autorizacion API
+        shell: bash
+        run: |
+          echo "=== API AUTHORIZATION TEST ==="
+          node test/api-authorization-test.js
+
+      # =========================================================
+      # 5. SECURITY GATE
       # =========================================================
 
       - name: Security Gate
@@ -167,6 +177,7 @@ jobs:
           echo "SAST: PASS"
           echo "Secret Scanning: PASS"
           echo "SCA: PASS"
+          echo "API Authorization Test: PASS"
           echo "----------------------------------------"
           echo "SECURITY GATE: ALLOW"
           echo "La version segura cumple los controles."
