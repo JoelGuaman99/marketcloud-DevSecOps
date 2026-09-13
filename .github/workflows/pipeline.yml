@@ -58,3 +58,41 @@ jobs:
           echo "SECURITY GATE: ALLOW"
           echo "La version segura cumple los controles."
           echo "======================================"
+                - name: Analizar secreto en version insegura
+        run: |
+          echo "=== ANALISIS DE SECRETOS - VERSION INSEGURA ==="
+
+          if grep -q 'databasePassword: "MarketCloudDemoPassword123!"' insecure/routes/config.js; then
+            echo "SECRET SCAN RESULT"
+            echo "Finding: Hardcoded Database Credential"
+            echo "Severity: HIGH"
+            echo "File: insecure/routes/config.js"
+            echo "Evidence: Database password stored directly in source code."
+            echo "Decision: ROTATE / REMOVE"
+            echo "Resultado esperado: VULNERABLE"
+          else
+            echo "ERROR: No se encontro el secreto de prueba esperado."
+            exit 1
+          fi
+
+      - name: Verificar secreto en version segura
+        run: |
+          echo "=== ANALISIS DE SECRETOS - VERSION SEGURA ==="
+
+          if grep -q 'process.env.DB_PASSWORD' secure/routes/config.js; then
+            echo "Environment variable reference detected"
+          else
+            echo "ERROR: No se encontro referencia segura a DB_PASSWORD."
+            exit 1
+          fi
+
+          if grep -q 'MarketCloudDemoPassword123!' secure/routes/config.js; then
+            echo "ERROR: Hardcoded secret still present."
+            exit 1
+          fi
+
+          echo "SECRET SCAN RESULT"
+          echo "Finding: No hardcoded database credential detected"
+          echo "Secret source: Environment variable"
+          echo "Decision: ALLOW"
+          echo "Resultado esperado: SECURE"
