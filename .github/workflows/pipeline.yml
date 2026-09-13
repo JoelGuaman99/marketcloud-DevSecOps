@@ -1,0 +1,20 @@
+name: MarketCloud DevSecOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prueba-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Mostrar mensaje
+        run: echo "Pipeline DevSecOps funcionando"
+
+      - name: Mostrar fecha
+        run: date
+
+      - name: Confirmar resultado
+        run: echo "Pipeline completado correctamente"
