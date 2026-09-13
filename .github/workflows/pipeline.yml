@@ -6,15 +6,31 @@ on:
       - main
 
 jobs:
-  prueba-pipeline:
+  security-pipeline:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Descargar código del repositorio
+        uses: actions/checkout@v4
+
       - name: Mostrar mensaje
         run: echo "Pipeline DevSecOps funcionando"
 
-      - name: Mostrar fecha
-        run: date
+      - name: Analisis SAST basico
+        run: |
+          echo "Analizando routes/payments.js"
+
+          if grep -q '"FROM payments WHERE student_id = " + studentId' routes/payments.js; then
+            echo "SAST RESULT"
+            echo "Finding: SQL Injection"
+            echo "Severity: HIGH"
+            echo "File: routes/payments.js"
+            echo "Evidence: User-controlled parameter studentId concatenated into SQL query."
+            exit 1
+          else
+            echo "SAST RESULT"
+            echo "Finding: No SQL Injection pattern detected"
+          fi
 
       - name: Confirmar resultado
         run: echo "Pipeline completado correctamente"
