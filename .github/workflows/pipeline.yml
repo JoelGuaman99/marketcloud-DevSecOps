@@ -13,24 +13,48 @@ jobs:
       - name: Descargar código del repositorio
         uses: actions/checkout@v4
 
-      - name: Mostrar mensaje
-        run: echo "Pipeline DevSecOps funcionando"
-
-      - name: Analisis SAST basico
+      - name: Analizar version insegura
         run: |
-          echo "Analizando routes/payments.js"
+          echo "=== ANALISIS VERSION INSEGURA ==="
 
-          if grep -q '"FROM payments WHERE student_id = " + studentId' routes/payments.js; then
+          if grep -q '"FROM payments WHERE student_id = " + studentId' insecure/routes/payments.js; then
             echo "SAST RESULT"
             echo "Finding: SQL Injection"
             echo "Severity: HIGH"
-            echo "File: routes/payments.js"
+            echo "File: insecure/routes/payments.js"
             echo "Evidence: User-controlled parameter studentId concatenated into SQL query."
-            exit 1
+            echo "Resultado esperado: VULNERABLE"
           else
-            echo "SAST RESULT"
-            echo "Finding: No SQL Injection pattern detected"
+            echo "No se detecto el patron vulnerable esperado."
+            exit 1
           fi
 
-      - name: Confirmar resultado
-        run: echo "Pipeline completado correctamente"
+      - name: Analizar version segura
+        run: |
+          echo "=== ANALISIS VERSION SEGURA ==="
+
+          if grep -q 'WHERE student_id = \$1' secure/routes/payments.js; then
+            echo "Parameterized query detected"
+          else
+            echo "ERROR: No se encontro consulta parametrizada."
+            exit 1
+          fi
+
+          if grep -q '403' secure/routes/payments.js; then
+            echo "Object-level authorization control detected"
+          else
+            echo "ERROR: No se encontro control de autorizacion."
+            exit 1
+          fi
+
+          echo "SAST RESULT"
+          echo "Finding: No SQL Injection pattern detected"
+          echo "Authorization: Present"
+          echo "Resultado esperado: SECURE"
+
+      - name: Security Gate
+        run: |
+          echo "======================================"
+          echo "SECURITY GATE: ALLOW"
+          echo "La version segura cumple los controles."
+          echo "======================================"
