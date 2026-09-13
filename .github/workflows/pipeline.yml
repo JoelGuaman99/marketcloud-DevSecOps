@@ -1,4 +1,4 @@
-\name: MarketCloud DevSecOps Pipeline
+name: MarketCloud DevSecOps Pipeline
 
 on:
   push:
